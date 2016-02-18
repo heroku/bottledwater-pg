@@ -26,7 +26,6 @@ script:
   - 'for i in ./debian/pbuilder-hooks/*-apt.*.sh; do echo "+$i"; sudo $i; echo "-$i: $?"; done && sudo apt-get update'
   - sudo dpkg -i --force-depends ../bottledwater*.deb && sudo apt-get install -y --fix-broken
   - test -x /usr/bin/bottledwater && { bottledwater || true; } || { echo Package failed to install; false; }
-  - mkdir -p /tmp/${TRAVIS_REPO_SLUG}/packages && mv ../*.deb /tmp/${TRAVIS_REPO_SLUG}/packages
 deploy:
   provider: packagecloud
   repository: dod
@@ -34,10 +33,9 @@ deploy:
   token:
     secure: "v4zL9e4IDpC7CpsjFA7PYxTu5MuPgmeba4bSrQsz7kqSUxwag2cMtKghXFvjrzQXLPKZ9blxQJMDWi+eK4k8uPO6SlKfWFpKVpyVZt3d5ps5vlBN3Wfo4oz4MfpFqt4uYodIHKmCVzxL/VpAHrnt6DXib9xKS2wFyoq/r/kCpqqHjrqhmp05lfVsjDoLRMUCPcCA4IPoHuMmEmzWL7twrGFnJuCqVb+HGhbxIwZ7OB4dRoAsiz4JG8m33jC5VBaj5xt//F/NDx8cMvxR4dRWHgx3zl8WA6eQAwX/eQqkSAe/2snv6rYAnlplaBJO2Tm/JprtQji71B2gCDH33KqirmY1ULEXKS1MxKVPpqOg853N0kIE0meWGq3FWuiuYB6TbGrz1Q3FfFTZmkbdvqKHe8J72SJicZ/IizhhjiXiiZK9YwU8wVoWjGXMQbIeIiaBuWirHMCT6nFHzO+x5IbzVR7MO65dP9thMzusY58ixgBKhWtyYNscYk9vvNuc5F9fAJpyEIz11RdhoiRG2cn0G1cvVNp+41Sw5lktvOndo2yzE4Oh5wrBDiXPqp8jblv4ESJiywPE4s8cFg3CWO0D7Ph2lNmDrfU8FbsoAUccXZ3b1BdtA55o7SPZNk1MSUrl+/FBDRV1XjvYfsh89lVczxb5vmDWO0w1f1A/d+ZMnkA="
   dist: "ubuntu/$DIST"
-  package_glob: "/tmp/${TRAVIS_REPO_SLUG}/packages/*.deb"
+  package_glob: "../*.deb"
   on:
     all_branches: true
-  skip_cleanup: true
 after_deploy:
   # Need to hide the output here because git obligingly echoes the repo URL,
   # including the unencrypted token, to the build log
