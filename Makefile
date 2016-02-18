@@ -1,6 +1,6 @@
 .PHONY: all install clean
 
-DEBIAN_BRANCH = debian-json
+DEBIAN_BRANCH = debian-prefix
 
 # For git-buildpackage's mysterious purposes we need to tell it the revision
 # of the upstream branch we are building from.  (We can't just give it the
