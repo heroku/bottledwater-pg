@@ -41,6 +41,7 @@ deploy:
   package_glob: "/tmp/${TRAVIS_REPO_SLUG}/packages/*.deb"
   on:
    all_branches: true
+  skip_cleanup: true
 notifications:
   email: false
 branches:
