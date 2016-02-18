@@ -26,10 +26,6 @@ script:
   - 'for i in ./debian/pbuilder-hooks/*-apt.*.sh; do echo "+$i"; sudo $i; echo "-$i: $?"; done && sudo apt-get update'
   - sudo dpkg -i --force-depends ../bottledwater*.deb && sudo apt-get install -y --fix-broken
   - test -x /usr/bin/bottledwater && { bottledwater || true; } || { echo Package failed to install; false; }
-after_success:
-  # Need to hide the output here because git obligingly echoes the repo URL,
-  # including the unencrypted token, to the build log
-  - git push --tags https://${GITHUB_OAUTH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git >/dev/null 2>/dev/null && echo Pushed tag || echo Failed to push tag
 deploy:
   provider: packagecloud
   repository: dod
@@ -40,6 +36,10 @@ deploy:
   package_glob: "../*.deb"
   on:
     all_branches: true
+after_deploy:
+  # Need to hide the output here because git obligingly echoes the repo URL,
+  # including the unencrypted token, to the build log
+  - git push --tags https://${GITHUB_OAUTH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git >/dev/null 2>/dev/null && echo Pushed tag || echo Failed to push tag
 notifications:
   email: false
 branches:
