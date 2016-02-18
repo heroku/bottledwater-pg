@@ -1,3 +1,12 @@
+bottledwater (0.1++json+prefix-0ubuntu1) trusty; urgency=medium
+
+  * Support an optional topic name prefix
+  * Add command-line flag --topic-prefix
+  * Update DEBIAN_BRANCH
+  * Set git-upstream to samstokes/topic-prefix
+
+ -- Sam Stokes <me@samstokes.co.uk>  Thu, 18 Feb 2016 15:50:09 -0800
+
 bottledwater (0.1++json-0ubuntu1) trusty; urgency=medium
 
   * Pull length calculation closer to logic that determines it
