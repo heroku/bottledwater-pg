@@ -27,10 +27,6 @@ script:
   - sudo dpkg -i --force-depends ../bottledwater*.deb && sudo apt-get install -y --fix-broken
   - test -x /usr/bin/bottledwater && { bottledwater || true; } || { echo Package failed to install; false; }
   - mkdir -p /tmp/${TRAVIS_REPO_SLUG}/packages && mv ../*.deb /tmp/${TRAVIS_REPO_SLUG}/packages
-after_deploy:
-  # Need to hide the output here because git obligingly echoes the repo URL,
-  # including the unencrypted token, to the build log
-  - git push --tags https://${GITHUB_OAUTH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git >/dev/null 2>/dev/null && echo Pushed tag || echo Failed to push tag
 deploy:
   provider: packagecloud
   repository: dod
@@ -42,6 +38,10 @@ deploy:
   on:
    all_branches: true
   skip_cleanup: true
+after_deploy:
+  # Need to hide the output here because git obligingly echoes the repo URL,
+  # including the unencrypted token, to the build log
+  - git push --tags https://${GITHUB_OAUTH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git >/dev/null 2>/dev/null && echo Pushed tag || echo Failed to push tag
 notifications:
   email: false
 branches:
