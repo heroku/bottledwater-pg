@@ -30,16 +30,16 @@ after_success:
   # Need to hide the output here because git obligingly echoes the repo URL,
   # including the unencrypted token, to the build log
   - git push --tags https://${GITHUB_OAUTH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git >/dev/null 2>/dev/null && echo Pushed tag || echo Failed to push tag
-#deploy:
-#  provider: packagecloud
-#  repository: dod
-#  username: heroku
-#  token:
-#    secure: TODO
-#  dist: "ubuntu/$DIST"
-#  package_glob: "$HOME/result/*.deb"
-#  on:
-#    all_branches: true
+deploy:
+  provider: packagecloud
+  repository: dod
+  username: heroku
+  token:
+    secure: "v4zL9e4IDpC7CpsjFA7PYxTu5MuPgmeba4bSrQsz7kqSUxwag2cMtKghXFvjrzQXLPKZ9blxQJMDWi+eK4k8uPO6SlKfWFpKVpyVZt3d5ps5vlBN3Wfo4oz4MfpFqt4uYodIHKmCVzxL/VpAHrnt6DXib9xKS2wFyoq/r/kCpqqHjrqhmp05lfVsjDoLRMUCPcCA4IPoHuMmEmzWL7twrGFnJuCqVb+HGhbxIwZ7OB4dRoAsiz4JG8m33jC5VBaj5xt//F/NDx8cMvxR4dRWHgx3zl8WA6eQAwX/eQqkSAe/2snv6rYAnlplaBJO2Tm/JprtQji71B2gCDH33KqirmY1ULEXKS1MxKVPpqOg853N0kIE0meWGq3FWuiuYB6TbGrz1Q3FfFTZmkbdvqKHe8J72SJicZ/IizhhjiXiiZK9YwU8wVoWjGXMQbIeIiaBuWirHMCT6nFHzO+x5IbzVR7MO65dP9thMzusY58ixgBKhWtyYNscYk9vvNuc5F9fAJpyEIz11RdhoiRG2cn0G1cvVNp+41Sw5lktvOndo2yzE4Oh5wrBDiXPqp8jblv4ESJiywPE4s8cFg3CWO0D7Ph2lNmDrfU8FbsoAUccXZ3b1BdtA55o7SPZNk1MSUrl+/FBDRV1XjvYfsh89lVczxb5vmDWO0w1f1A/d+ZMnkA="
+  dist: "ubuntu/$DIST"
+  package_glob: "../*.deb"
+  on:
+    all_branches: true
 notifications:
   email: false
 branches:
