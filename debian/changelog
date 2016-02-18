@@ -1,3 +1,24 @@
+bottledwater (0.1+master-1ubuntu1) trusty; urgency=medium
+
+  [ Sam Stokes ]
+  * Test more thoroughly for package install success
+  * Install all dependency repos before testing package install
+  * Fail more informatively
+  * Run hooks more noisily
+  * Tell travis to build debian-* subbranches too
+  * `VERSION=0.1++mybranch-0ubuntu1 make deb-new-release`...
+  * Document Debian packaging workflow
+  * `REVISION=origin/master make deb-merge`...
+  * Re-encrypt Github token
+
+  [ Maciek Sakrejda ]
+  * Set up Travis to deploy builds to heroku/dod packagecloud
+
+  [ Sam Stokes ]
+  * Only push tag if package deploy succeeded
+
+ -- Sam Stokes <me@samstokes.co.uk>  Thu, 18 Feb 2016 14:43:35 -0800
+
 bottledwater (0.1+master-0ubuntu2) trusty; urgency=medium
 
   * Add make targets for updating the chroot
