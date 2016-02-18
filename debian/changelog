@@ -1,3 +1,10 @@
+bottledwater (0.1+master-0ubuntu4) trusty; urgency=medium
+
+  * fixup! Fix janky whitespace
+  * Remove some Travis magic to see if the magic was needed
+
+ -- Sam Stokes <me@samstokes.co.uk>  Thu, 18 Feb 2016 12:53:18 -0800
+
 bottledwater (0.1+master-0ubuntu3) trusty; urgency=medium
 
   * Test more thoroughly for package install success
