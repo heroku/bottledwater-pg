@@ -11,7 +11,7 @@ DEBIAN_BRANCH = debian-wal-hotfix
 # instead of
 #     git merge origin/master
 # then this will be updated for you.
-DEBIAN_UPSTREAM_TAG = 9e23f24
+DEBIAN_UPSTREAM_TAG = ed08a3c
 
 all:
 	$(MAKE) -C ext all
