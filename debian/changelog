@@ -1,3 +1,11 @@
+bottledwater (0.1++wal-hotfix-0ubuntu1) trusty; urgency=medium
+
+  * [HOTFIX] "flush" wal_pos reported in keepalive unless we have pending txns...
+  * Update DEBIAN_BRANCH
+  * Set git-upstream to heroku/wal-hotfix
+
+ -- Sam Stokes <me@samstokes.co.uk>  Mon, 25 Apr 2016 14:46:18 -0700
+
 bottledwater (0.1++json+prefix-0ubuntu1) trusty; urgency=medium
 
   * Support an optional topic name prefix
