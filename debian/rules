@@ -17,6 +17,15 @@ include /usr/share/dpkg/default.mk
 #  b) for some reason it blows up in Travis when cleaning ext/Makefile
 override_dh_auto_clean:
 
+# suppress dh_auto_test since:
+#  a) we're probably only building packages from a branch that's already had
+#     CI run on it, and if we're not (e.g. hotfix) then we probably have a good
+#     reason
+#  b) don't want to set up the test suite to run inside the package build
+#     environment, since that means Ruby inside Docker inside chroot inside a
+#     container...
+override_dh_auto_test:
+
 override_dh_install:
 	dh_install
 	install -D kafka/bottledwater debian/bottledwater/usr/bin/bottledwater
