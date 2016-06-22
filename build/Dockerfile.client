@@ -3,23 +3,27 @@
 #
 # Usage:
 #
-#   docker build -f build/Dockerfile.client -t confluent/bottledwater:0.1 .
+#   (assuming the binaries have been placed into the build/ directory alongside
+#   this Dockerfile)
+#   docker build -f build/Dockerfile.client -t confluent/bottledwater:0.1 build
 #   docker run -d --name bottledwater --link postgres:postgres --link kafka:kafka --link schema-registry:schema-registry confluent/bottledwater:0.1
 
-FROM postgres:9.4
+FROM postgres:9.5
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y libcurl3 libjansson4 libpq5
+    apt-get install -y --no-install-recommends \
+        libcurl3 libjansson4 libpq5
 
-ADD avro-1.7.7.tar.gz /
-ADD librdkafka-0.9.0.tar.gz /
+ADD avro.tar.gz /
+ADD librdkafka.tar.gz /
 ADD bottledwater-bin.tar.gz /
 
-RUN cp /usr/local/lib/librdkafka.so.1 /usr/lib/x86_64-linux-gnu && \
-    cp /usr/local/lib/libavro.so.22.0.0 /usr/lib/x86_64-linux-gnu
+COPY bottledwater-docker-wrapper.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/bottledwater-docker-wrapper.sh
 
-CMD /usr/local/bin/bottledwater \
-    --postgres "hostaddr=${POSTGRES_PORT_5432_TCP_ADDR} port=${POSTGRES_PORT_5432_TCP_PORT} dbname=postgres user=postgres" \
-    --broker ${KAFKA_PORT_9092_TCP_ADDR}:${KAFKA_PORT_9092_TCP_PORT} \
-    --schema-registry http://${SCHEMA_REGISTRY_PORT_8081_TCP_ADDR}:${SCHEMA_REGISTRY_PORT_8081_TCP_PORT}
+RUN cp /usr/local/lib/librdkafka.so.* /usr/lib/x86_64-linux-gnu && \
+    cp /usr/local/lib/libavro.so.* /usr/lib/x86_64-linux-gnu
+
+ENTRYPOINT ["/usr/local/bin/bottledwater-docker-wrapper.sh"]
+CMD ["--output-format=json", "--allow-unkeyed"]

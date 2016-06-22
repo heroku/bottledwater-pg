@@ -20,7 +20,7 @@ a data warehouse, calculate analytics, monitor it for fraud, and so on.
 How it works
 ------------
 
-Bottled Water uses the [logical decoding](http://www.postgresql.org/docs/9.4/static/logicaldecoding.html)
+Bottled Water uses the [logical decoding](http://www.postgresql.org/docs/9.5/static/logicaldecoding.html)
 feature (introduced in PostgreSQL 9.4) to extract a consistent snapshot and a continuous stream
 of change events from a database. The data is extracted at a row level, and encoded using
 [Avro](http://avro.apache.org/). A client program connects to your database, extracts this data,
@@ -61,26 +61,25 @@ prepared. You need at least 2GB of memory to run this demo, so if you're running
 machine (such as [Boot2docker](http://boot2docker.io/) on a Mac), please check that it is big
 enough.
 
-Once you have [installed Docker](https://docs.docker.com/installation/), you can start up
-Postgres, Kafka, Zookeeper (required by Kafka) and the
-[Confluent schema registry](http://confluent.io/docs/current/schema-registry/docs/intro.html)
-as follows:
+First, install:
 
-    $ docker run -d --name zookeeper --hostname zookeeper confluent/zookeeper
-    $ docker run -d --name kafka --hostname kafka --link zookeeper:zookeeper \
-        --env KAFKA_LOG_CLEANUP_POLICY=compact confluent/kafka
-    $ docker run -d --name schema-registry --hostname schema-registry \
-        --link zookeeper:zookeeper --link kafka:kafka \
-        --env SCHEMA_REGISTRY_AVRO_COMPATIBILITY_LEVEL=none confluent/schema-registry
-    $ docker run -d --name postgres --hostname postgres confluent/postgres-bw:0.1
+* [Docker](https://docs.docker.com/installation/), which is used to run the
+  individual services/containers, and
+* [docker-compose](https://docs.docker.com/compose/install/), which is used to
+  orchestrate the interaction between services.
+
+After the prerequisite applications are installed, you need to build the Docker containers for Bottled Water and Postgres by running `make docker-compose`.
+As soon as the build process finishes, start up Postgres, Kafka, Zookeeper (required by Kafka) and the [Confluent schema registry](http://confluent.io/docs/current/schema-registry/docs/intro.html)
+by running `docker-compose` as follows:
+
+    $ docker-compose up -d zookeeper kafka schema-registry postgres
 
 The `postgres-bw` image extends the
 [official Postgres docker image](https://registry.hub.docker.com/_/postgres/) and adds
 Bottled Water support. However, before Bottled Water can be used, it first needs to be
 enabled. To do this, start a `psql` shell for the Postgres database:
 
-    $ docker run -it --rm --link postgres:postgres postgres:9.4 sh -c \
-        'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'
+    $ docker-compose run --rm psql
 
 When the prompt appears, enable the `bottledwater` extension, and create a database with
 some test data, for example:
@@ -94,23 +93,25 @@ You can keep the psql terminal open, and run the following in a new terminal.
 The next step is to start the Bottled Water client, which relays data from Postgres to Kafka.
 You start it like this:
 
-    $ docker run -d --name bottledwater --hostname bottledwater --link postgres:postgres \
-        --link kafka:kafka --link schema-registry:schema-registry confluent/bottledwater:0.1
+    $ docker-compose up -d bottledwater-avro
 
-You can run `docker logs bottledwater` to see what it's doing. Now Bottled Water has taken
-the snapshot, and continues to watch Postgres for any data changes. You can see the data
-that has been extracted from Postgres by consuming from Kafka (the topic name `test` must
-match up with the name of the table you created earlier):
+You can run `docker-compose logs bottledwater-avro` to see what it's doing. Now Bottled
+Water has taken the snapshot, and continues to watch Postgres for any data changes. You can
+see the data that has been extracted from Postgres by consuming from Kafka (the topic name
+`test` must match up with the name of the table you created earlier):
 
-    $ docker run -it --rm --link zookeeper:zookeeper --link kafka:kafka \
-        --link schema-registry:schema-registry confluent/tools \
-        kafka-avro-console-consumer --property print.key=true --topic test --from-beginning
+    $ docker-compose run --rm kafka-avro-console-consumer \
+        --from-beginning --property print.key=true --topic test
 
 This should print out the contents of the `test` table in JSON format (key/value separated
 by tab). Now go back to the `psql` terminal, and change some data — insert, update or delete
 some rows in the `test` table. You should see the changes swiftly appear in the Kafka
 consumer terminal.
 
+When you're done testing, you can destroy the cluster and it's associated data volumes with:
+
+    $ docker-compose stop
+    $ docker-compose rm -vf
 
 Building from source
 --------------------
@@ -121,9 +122,9 @@ To compile Bottled Water is just a matter of:
 
 For that to work, you need the following dependencies installed:
 
-* [PostgreSQL 9.4](http://www.postgresql.org/) development libraries (PGXS and libpq).
+* [PostgreSQL 9.5](http://www.postgresql.org/) development libraries (PGXS and libpq).
   (Homebrew: `brew install postgresql`;
-  Ubuntu: `sudo apt-get install postgresql-server-dev-9.4 libpq-dev`)
+  Ubuntu: `sudo apt-get install postgresql-server-dev-9.5 libpq-dev`)
 * [libsnappy](https://code.google.com/p/snappy/), a dependency of Avro.
   (Homebrew: `brew install snappy`; Ubuntu: `sudo apt-get install libsnappy-dev`)
 * [avro-c](http://avro.apache.org/), the C implementation of Avro.
@@ -221,12 +222,31 @@ complain and refuse to start. You can override this with the `--allow-unkeyed` o
 Any inserts and updates to tables without primary key or replica identity will be
 sent to Kafka as messages without a key. Deletes to such tables are not sent to Kafka.
 
-Messages are written to Kafka in a binary Avro encoding, which is efficient, but not
-human-readable. To view the contents of a Kafka topic, you can use the Avro console
-consumer:
+Messages are written to Kafka by default in a binary Avro encoding, which is
+efficient, but not human-readable. To view the contents of a Kafka topic, you can use
+the Avro console consumer:
 
     ./bin/kafka-avro-console-consumer --topic test --zookeeper localhost:2181 \
         --property print.key=true
+
+
+### Output formats
+
+Bottled Water currently supports writing messages to Kafka in one of two output
+formats: Avro, or JSON.  The output format is configured via the `--output-format`
+command-line switch.
+
+Avro is recommended for large scale use, since it uses a much more efficient binary
+encoding for messages, defines rules for [schema
+evolution](http://docs.confluent.io/1.0/avro.html), and is able to faithfully
+represent a wide range of column types.  Avro output requires an instance of the
+[Confluent Schema
+Registry](http://docs.confluent.io/1.0/schema-registry/docs/intro.html) to be running,
+and consumers will need to query the schema registry in order to decode messages.
+
+JSON is ideal for evaluation and prototyping, or integration with languages
+without good Avro library support.  JSON is human readable, and widely supported among
+programming languages.  JSON output does not require a schema registry.
 
 
 Known gotchas with older librdkafka versions
@@ -267,6 +287,29 @@ to partition 0, then a subsequent delete for row 42 goes to partition 1, then
 log compaction will be unable to garbage-collect the insert).  It will also
 break any consumer relying on seeing all updates relating to a given key (e.g.
 for a stream-table join).
+
+
+Developing
+----------
+
+If you want to work on the Bottled Water codebase, the [Docker setup](#running-in-docker) is
+a good place to start.
+
+Bottled Water ships with a [test suite](spec) that [verifies basic
+functionality](spec/functional/smoke_spec.rb), [documents supported Postgres
+types](spec/functional/type_specs.rb) and [tests message publishing
+semantics](spec/functional/partitioning_spec.rb).  The test suite also relies on Docker and
+Docker Compose.  To run it:
+
+ 1. Install Docker and Docker Compose (see [Docker setup](#running-in-docker))
+ 2. Install Ruby 2.2.4 (see [ruby-lang.org](https://www.ruby-lang.org/en/downloads/))
+    (required to run the tests)
+ 3. Install Bundler: `gem install bundler`
+ 4. Build the Docker images: `make docker-compose`
+ 5. Run the tests: `make test`
+
+If submitting a pull request, particularly one that adds new functionality, it is highly
+encouraged to include tests that exercise the changed code!
 
 
 Status
