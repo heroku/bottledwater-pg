@@ -1,3 +1,166 @@
+bottledwater (0.1+master-2ubuntu1) trusty; urgency=medium
+
+  [ Sam Stokes ]
+  * Shutdown cleanly on SIGTERM as well as SIGINT
+  * Add 'make docker' for a one-line Docker build
+  * Pull length calculation closer to logic that determines it
+  * Partial implementation of JSON output...
+  * Prototype looking up schema from cache for JSON output
+  * Extract table metadata mapping so json format doesn't depend on registry
+  * Better error reporting
+  * Extract table metadata mapping from registry.c into its own component
+  * Add --output-format to select avro/json at runtime
+  * Encapsulate schema registry url setter
+  * Allow operating without a schema registry when --output-format=json
+  * Clean up sprawling table_mapper_update function
+  * More informative logging from table_mapper_update
+  * Document output format enum better
+  * Document changes made for JSON output
+  * Improve Avro error handling in json.c
+  * Update README to discuss output formats
+  * Improve logging and clarify memory management for schema mapping
+  * Force libpq{5,-dev} to 9.4.x to unbreak Docker build
+  * Reformat some long lines for readability
+  * Use correct wildcard syntax...
+  * Dedupe JSON error reporting
+  * Remove warning about whitespace in JSON since nobody seems to care any more
+  * Docker build dumps tarballs in ./tmp instead of cluttering project root
+  * Update Docker instructions to point at Makefile
+  * Build client and postgres images from tmp directory...
+  * Support an optional topic name prefix
+  * Add command-line flag --topic-prefix
+  * Fix some misleading logs
+  * Clean up some duplicate logs
+
+  [ Martin Kleppmann ]
+  * Update Avro-C dependency to 1.8.0
+  * Upgrade build to Postgres 9.5
+  * Fix inconsistent whitespace
+  * Fix include path for postgres_ext
+
+  [ Sam Stokes ]
+  * Add a docker-compose file
+  * use locally built docker images
+  * `make docker-compose`
+  * adapt for json
+  * Make it easier to run Dockerized bottledwater with different args...
+  * Define both JSON and Avro modes in docker-compose.yml
+  * Remove unneeded Zookeeper ports
+  * Bind Kafka and ZK to same ports on host to simplify discovery
+  * Set KAFKA_ADVERTISED_HOST_NAME so we can connect from the host too
+
+  [ Ted Kaemming ]
+  * Update README to reflect docker-compose instructions...
+
+  [ Sam Stokes ]
+  * fix reference to docker-compose bottledwater service
+  * First stab at a smoke test using a Dockerized cluster
+  * Bump docker-compose gem to fix deprecation warnings
+  * Add .travis.yml to run smoke test
+  * Spec topic autocreate behaviour
+  * Cleaner log handling
+  * Sanity check for test cluster reuse
+  * Give Bottled Water a chance to start up
+  * Use .ruby-version instead of Gemfile for Travis
+  * Spec topic behaviour with autocreate disabled
+  * Clean up hostname setting
+  * Tell Travis to install Bundler
+  * Extract out Kafka message grabbing logic
+  * Make sure we don't leak environment variables between runs
+  * Add specs for insert, delete and update
+  * Ensure docker-compose images are built before running tests
+  * hack in right IP address for Travis
+  * Tweak insert syntax
+  * Test keyless tables
+  * Don't waste one retry on polling too early
+  * Extract waiting logic
+  * Wait for Bottled Water container instead of hoping 1 second is enough
+  * Support older version of Docker remote API for Travis
+  * Reduce some spammy test output
+  * Send cluster status logs to stderr so we can filter them out
+  * Hide stderr on Travis unless build failed
+  * Add pry to the Gemfile
+  * Randomise rspec execution
+  * Run smoke tests in both JSON and Avro mode
+  * Dump logs of services that failed before stopping them
+  * Wait for schema registry to be actually working
+  * More readable multi-config testing using shared_examples
+  * Run message publishing specs for both avro and json
+  * Typo in sanity check
+  * Wait a bit (for ZK consensus?) after creating topic
+  * Extract message format contexts into helper
+  * Add pry-byebug for debugging tests
+  * Initial set of specs for round-tripping of Postgres types.
+  * Add (failing) tests for 'money' type and table without columns
+  * Delete volumes after run too
+  * Dedupe date/time examples
+  * Test roundtripping for keys as well as rows
+  * Query types from test cluster Postgres instead of host machine
+  * don't rebuild docker images because specs changed
+  * more readable length specifiers
+  * Spec inet types
+  * Allow running just JSON tests via '--tag format:json' to speed up development
+  * Make sure bundle is installed before trying to generate types
+  * Unify date types into custom value mechanism
+  * Spec range types
+  * Spec interval
+  * Sort custom literals
+  * Spec geometric types
+  * Flag more internal types
+  * Don't dump bottledwater logs for expected crash
+  * Spec json{,b}, xml, macaddr
+  * Spec text search types
+  * Spec remaining cases
+  * Spec hstore and array types
+  * At least document why we `sleep 1`
+  * Pre-create topics instead of waiting for autocreate
+  * Document found bugs
+  * Detect Docker host IP instead of hard coding it
+  * Clean up crash test a bit
+  * Spec partitioning behaviour
+  * Document more portable way of determining Docker host IP
+  * Add instructions for running the test suite
+  * Clarify documentation of generated code
+  * Test that string types pass through Unicode intact
+  * add failing test for tables with silly names
+  * retry Docker calls: duct tape for intermittent failures
+  * don't hide errors if consumer failed to start up
+  * don't report stderr as stdout
+  * fix test cluster not getting shut down in some failure cases
+  * allow a bit of time for topic creation to be reflected in Kafka
+
+  [ Samuel Cordeiro ]
+  * tweak package installation for Docker build
+  * fix build to be robust to postgres image changes
+  * make it easier to change avro-c and rdkafka versions
+
+  [ Till Kothe ]
+  * Add that 'make docker' is required
+
+  [ Sam Stokes ]
+  * add more rigorous test (failing in JSON mode) for bytea
+
+  [ Till Kothe ]
+  * Update README.md
+
+  [ Sam Stokes ]
+  * Add Postgres 9.5 types
+  * pin Kafka image to avoid it changing versions on us again
+  * Update Kazoo for Kafka 0.9 compatibility
+  * Allow specifying Kafka log.cleanup.policy in tests
+  * Fix sending unkeyed messages to compacted topics (Kafka 0.9 is stricter)
+  * Tighten up circular buffer logic and avoid processing each commit twice
+  * Log (debug only) when we backpressure
+  * Make snapshot transaction less of a special case...
+  * "flush" wal_pos reported in keepalive unless we have pending txns...
+  * Pin Confluent Docker images to Confluent Platform 2.0.1 versions...
+  * Use container hostnames instead of link environment variables...
+  * Fix some inconsistencies that crept into the docs (#87)
+  * Set git-upstream to confluent/master
+  * Don't try to run our test suite on package build
+
+ -- Sam Stokes <me@samstokes.co.uk>  Wed, 22 Jun 2016 16:04:41 -0700
+
 bottledwater (0.1+master-1ubuntu1) trusty; urgency=medium
 
   [ Sam Stokes ]
