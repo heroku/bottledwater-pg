@@ -1,3 +1,9 @@
+bottledwater (0.1++update-partitioner-0ubuntu2) trusty; urgency=medium
+
+  * Use Confluent Platform 3.0 debian repo for newer librdkafka package
+
+ -- Sam Stokes <me@samstokes.co.uk>  Wed, 22 Jun 2016 17:10:36 -0700
+
 bottledwater (0.1++update-partitioner-0ubuntu1) trusty; urgency=medium
 
   * Use consistent_random partitioner for rdkafka 0.9.1+; compile warnings otherwise
