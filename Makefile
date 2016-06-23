@@ -13,7 +13,7 @@ DEBIAN_BRANCH = debian-update-partitioner
 # instead of
 #     git merge origin/master
 # then this will be updated for you.
-DEBIAN_UPSTREAM_TAG = 1560d72
+DEBIAN_UPSTREAM_TAG = c8e183b
 
 all:
 	$(MAKE) -C ext all
