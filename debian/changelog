@@ -1,3 +1,11 @@
+bottledwater (0.1++postgres-versions-0ubuntu3) trusty; urgency=medium
+
+  * skip recommends when installing dev tools
+  * Extension packages for multiple PG versions with pg_buildext
+  * Update DEBIAN_BRANCH for testing
+
+ -- Sam Stokes <me@samstokes.co.uk>  Thu, 07 Jul 2016 19:58:46 -0700
+
 bottledwater (0.1+master-2ubuntu1) trusty; urgency=medium
 
   [ Sam Stokes ]
