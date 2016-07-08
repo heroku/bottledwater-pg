@@ -2,7 +2,7 @@ DOCKER_TAG = dev
 
 .PHONY: all install clean
 
-DEBIAN_BRANCH = debian
+DEBIAN_BRANCH = debian-postgres-versions
 
 # For git-buildpackage's mysterious purposes we need to tell it the revision
 # of the upstream branch we are building from.  (We can't just give it the

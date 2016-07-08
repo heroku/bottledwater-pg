@@ -22,7 +22,7 @@ RUN git config --global user.email docker@example.com
 COPY . /tmp/bottledwater
 
 WORKDIR /usr/src
-RUN git clone --depth=50 --branch=debian file:///tmp/bottledwater bottledwater-pg
+RUN git clone --depth=50 --branch=debian-postgres-versions file:///tmp/bottledwater bottledwater-pg
 
 WORKDIR /usr/src/bottledwater-pg
 RUN git checkout -qf $(git rev-parse HEAD)
