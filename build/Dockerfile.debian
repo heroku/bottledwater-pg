@@ -13,6 +13,7 @@ RUN apt-get update && \
         cowbuilder \
         debhelper \
         fakeroot \
+        postgresql-server-dev-all \
         git-buildpackage
 
 RUN git config --global user.name Dockerfile.debian

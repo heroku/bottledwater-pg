@@ -15,7 +15,7 @@ cache:
 before_install:
   - sudo apt-get update -qq
 install:
-  - sudo apt-get install -qq --no-install-recommends build-essential cowbuilder debhelper fakeroot git-buildpackage
+  - sudo apt-get install -qq --no-install-recommends build-essential cowbuilder debhelper fakeroot postgresql-server-dev-all git-buildpackage
   - make deb-prepare
 script:
   - make deb-build
