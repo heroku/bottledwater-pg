@@ -10,7 +10,7 @@
 # See the Makefile and the other Dockerfiles in this directory for more
 # detail on how the build artifacts are used.
 
-FROM postgres:9.5
+FROM postgres:9.4
 
 ENV RDKAFKA_VERSION=0.9.1 \
     RDKAFKA_SHASUM="b9d0dd1de53d9f566312c4dd148a4548b4e9a6c2  /root/librdkafka-0.9.1.tar.gz" \
@@ -56,6 +56,6 @@ RUN curl -o /root/librdkafka-${RDKAFKA_VERSION}.tar.gz -SL https://github.com/ed
 COPY . /root/bottledwater
 RUN cd /root/bottledwater && \
     make clean && make && make install && cd / && \
-    tar czf bottledwater-ext.tar.gz usr/lib/postgresql/${PG_MAJOR}/lib/bottledwater.so usr/share/postgresql/${PG_MAJOR}/extension/bottledwater* && \
+    tar czf bottledwater-ext-94.tar.gz usr/lib/postgresql/${PG_MAJOR}/lib/bottledwater.so usr/share/postgresql/${PG_MAJOR}/extension/bottledwater* && \
     cp /root/bottledwater/kafka/bottledwater /root/bottledwater/client/bwtest /usr/local/bin && \
     tar czf bottledwater-bin.tar.gz usr/local/bin/bottledwater usr/local/bin/bwtest

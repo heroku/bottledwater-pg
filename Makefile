@@ -40,7 +40,7 @@ test-deps: test-bundle spec/functional/type_specs.rb
 test: test-deps
 	bundle exec rspec --order random
 
-docker: docker-client docker-postgres
+docker: docker-client docker-postgres docker-postgres94
 
 docker-compose: docker
 	docker-compose build
@@ -48,11 +48,17 @@ docker-compose: docker
 tmp:
 	mkdir tmp
 
+tmp/%-94.tar.gz: tmp docker-build-94
+	docker run --rm bwbuild-94:$(DOCKER_TAG) cat /$*-94.tar.gz > $@
+
 tmp/%.tar.gz: tmp docker-build
 	docker run --rm bwbuild:$(DOCKER_TAG) cat /$*.tar.gz > $@
 
 tmp/%: build/% tmp
 	cp $< $@
+
+docker-build-94:
+	docker build -f build/Dockerfile.build94 -t bwbuild-94:$(DOCKER_TAG) .
 
 docker-build:
 	docker build -f build/Dockerfile.build -t bwbuild:$(DOCKER_TAG) .
@@ -63,6 +69,8 @@ docker-client: tmp/Dockerfile.client tmp/avro.tar.gz tmp/librdkafka.tar.gz tmp/b
 docker-postgres: tmp/Dockerfile.postgres tmp/bottledwater-ext.tar.gz tmp/avro.tar.gz tmp/replication-config.sh
 	docker build -f $< -t local-postgres-bw:$(DOCKER_TAG) tmp
 
+docker-postgres94: tmp/Dockerfile.postgres94 tmp/bottledwater-ext-94.tar.gz tmp/avro.tar.gz tmp/replication-config.sh
+	docker build -f $< -t local-postgres94-bw:$(DOCKER_TAG) tmp
 
 deb-merge:
 	test -n "${REVISION}" || { echo 'Please set the REVISION you want to merge (e.g. origin/master)' >&2; exit 1; }
