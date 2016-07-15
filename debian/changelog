@@ -1,3 +1,41 @@
+bottledwater (0.1+master-3ubuntu1) trusty; urgency=medium
+
+  [ Sam Stokes ]
+  * Print the actual error if we fail to send a message...
+  * Rationalise error logging in kafka daemon
+  * Rationalise error handling that causes daemon to exit
+  * Add some failing tests for publish errors being fatal
+  * Add failing tests for BW behaviour when its dependencies are down
+  * Include topic in Kafka delivery error logging
+  * Make table-mapping errors non-fatal
+  * Support overriding BW command line opts via env vars...
+  * Give frame_reader its own error buffer rather than overloading avro_strerror...
+  * add --on-error switch to control error handling behaviour
+  * Don't leave half-registered tables in case of mapping error
+  * Pass table mapping errors in callbacks back to frame_reader
+  * Pass encoding errors in callbacks back to frame_reader
+  * Make Kafka produce errors respect error-policy
+  * Spec for on-error=log and on-error=exit
+  * make new tests work under Kafka 0.9
+  * Use enums instead of #defines
+  * Document error handling policies in README
+  * Use consistent_random partitioner for rdkafka 0.9.1+; compile warnings otherwise
+  * Recommend (and use for Docker build) rdkafka 0.9.1
+  * More permissive test for evenness of random partitioning
+  * Actually check for 0.9.1...
+
+  [ juliaaano ]
+  * Disable user interaction from apt-get statement
+
+  [ Sam Stokes ]
+  * Build Docker images for Postgres 9.4 and 9.5, and test both...
+  * Fix thinko with test cluster startup
+  * skip recommends when installing dev tools
+  * Set git-upstream to confluent/master
+  * Extension packages for multiple PG versions with pg_buildext
+
+ -- Sam Stokes <me@samstokes.co.uk>  Thu, 14 Jul 2016 17:23:23 -0700
+
 bottledwater (0.1+master-2ubuntu1) trusty; urgency=medium
 
   [ Sam Stokes ]
