@@ -1,3 +1,20 @@
+bottledwater (0.1+master-3ubuntu2) trusty; urgency=medium
+
+  * Revert "Fix thinko with test cluster startup"
+  * parallelise initial build
+  * reforbulate make targets to avoid Travis rebuilding multiple times
+  * Specs for long identifiers
+  * Tweak tests for non-alphanumeric names
+  * Don't ignore errors creating Avro schema...
+  * Sanitise strings before using them as identifiers for Avro schemas...
+  * Sanitise column names (-> Avro record field names) too
+  * More missing Avro failure checks
+  * Special-case zero-column tables to prevent segfaulting Postgres
+  * Link to dropped column bug
+  * Set git-upstream to confluent/master
+
+ -- Sam Stokes <me@samstokes.co.uk>  Fri, 29 Jul 2016 11:50:25 -0700
+
 bottledwater (0.1+master-3ubuntu1) trusty; urgency=medium
 
   [ Sam Stokes ]
