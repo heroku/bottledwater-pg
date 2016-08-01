@@ -1,3 +1,13 @@
+bottledwater (0.1+master-3ubuntu4) trusty; urgency=medium
+
+  [ Dat Tran ]
+  * Add free 'key' value inside send_kafka_message to avoid memory leak (#84)
+
+  [ Sam Stokes ]
+  * Set git-upstream to confluent/master
+
+ -- Sam Stokes <me@samstokes.co.uk>  Mon, 01 Aug 2016 10:50:11 -0700
+
 bottledwater (0.1+master-3ubuntu3) trusty; urgency=medium
 
   * Fix identifier sanitisation for Unicode characters
