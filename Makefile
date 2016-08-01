@@ -13,7 +13,7 @@ DEBIAN_BRANCH = debian
 # instead of
 #     git merge origin/master
 # then this will be updated for you.
-DEBIAN_UPSTREAM_TAG = 18ac617
+DEBIAN_UPSTREAM_TAG = 41f5938
 
 all:
 	$(MAKE) -C ext all
