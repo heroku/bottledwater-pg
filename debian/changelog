@@ -1,3 +1,10 @@
+bottledwater (0.1+master-3ubuntu6) trusty; urgency=medium
+
+  * remove dead code
+  * pass DEBIAN_BRANCH to deb-docker build
+
+ -- Sam Stokes <me@samstokes.co.uk>  Wed, 17 Aug 2016 14:46:11 -0700
+
 bottledwater (0.1+master-3ubuntu5) trusty; urgency=medium
 
   * Configure git so tagging works
