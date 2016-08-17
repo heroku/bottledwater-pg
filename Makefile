@@ -13,7 +13,7 @@ DEBIAN_BRANCH = debian-avro-compatibility
 # instead of
 #     git merge origin/master
 # then this will be updated for you.
-DEBIAN_UPSTREAM_TAG = 41f5938
+DEBIAN_UPSTREAM_TAG = 47c3caf
 
 all:
 	$(MAKE) -C ext all
