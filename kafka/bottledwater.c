@@ -2,8 +2,10 @@
 #include "json.h"
 #include "logger.h"
 #include "registry.h"
+#include "oid2avro.h"
 
 #include <librdkafka/rdkafka.h>
+#include <assert.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +22,7 @@
 #define DEFAULT_BROKER_LIST "localhost:9092"
 #define DEFAULT_SCHEMA_REGISTRY "http://localhost:8081"
 
+#define TABLE_NAME_BUFFER_LENGTH 128
 
 #define check(err, call) { err = call; if (err) return err; }
 
@@ -131,6 +134,7 @@ void set_error_policy(producer_context_t context, char *policy);
 const char* error_policy_name(error_policy_t format);
 void set_kafka_config(producer_context_t context, char *property, char *value);
 void set_topic_config(producer_context_t context, char *property, char *value);
+char* topic_name_from_avro_schema(avro_schema_t schema);
 
 static int handle_error(producer_context_t context, int err, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
 
@@ -190,6 +194,9 @@ void usage() {
             "  -e, --on-error=[log|exit]   (default: %s)\n"
             "                          What to do in case of a transient error, such as\n"
             "                          failure to publish to Kafka.\n"
+            "  -x, --skip-snapshot     Skip taking a consistent snapshot of the existing\n"
+            "                          database contents and just start streaming any new\n"
+            "                          updates.\n"
             "  -C, --kafka-config property=value\n"
             "                          Set global configuration property for Kafka producer\n"
             "                          (see --config-help for list of properties).\n"
@@ -219,6 +226,7 @@ void parse_options(producer_context_t context, int argc, char **argv) {
         {"allow-unkeyed",   no_argument,       NULL, 'u'},
         {"topic-prefix",    required_argument, NULL, 'p'},
         {"on-error",        required_argument, NULL, 'e'},
+        {"skip-snapshot",   no_argument,       NULL, 'x'},
         {"kafka-config",    required_argument, NULL, 'C'},
         {"topic-config",    required_argument, NULL, 'T'},
         {"config-help",     no_argument,       NULL,  1 },
@@ -229,7 +237,7 @@ void parse_options(producer_context_t context, int argc, char **argv) {
 
     int option_index;
     while (true) {
-        int c = getopt_long(argc, argv, "d:s:b:r:f:up:e:C:T:", options, &option_index);
+        int c = getopt_long(argc, argv, "d:s:b:r:f:up:e:xC:T:", options, &option_index);
         if (c == -1) break;
 
         switch (c) {
@@ -256,6 +264,9 @@ void parse_options(producer_context_t context, int argc, char **argv) {
                 break;
             case 'e':
                 set_error_policy(context, optarg);
+                break;
+            case 'x':
+                context->client->skip_snapshot = true;
                 break;
             case 'C':
                 set_kafka_config(context, optarg, parse_config_option(optarg));
@@ -364,6 +375,36 @@ void set_topic_config(producer_context_t context, char *property, char *value) {
     }
 }
 
+char* topic_name_from_avro_schema(avro_schema_t schema) {
+
+    const char *table_name = avro_schema_name(schema);
+
+#ifdef AVRO_1_8
+    /* Gets the avro schema namespace which contains the Postgres schema name */
+    const char *namespace = avro_schema_namespace(schema);
+#else
+#warning "avro-c older than 1.8.0, will not include Postgres schema in Kafka topic name"
+    const char namespace[] = "dummy";
+#endif
+
+    char topic_name[TABLE_NAME_BUFFER_LENGTH];
+    /* Strips the beginning part of the namespace to extract the Postgres schema name
+     * and init topic_name with it */
+    int matched = sscanf(namespace, GENERATED_SCHEMA_NAMESPACE ".%s", topic_name);
+    /* If the sscanf doesn't find a match with GENERATED_SCHEMA_NAMESPACE,
+     * or if the Postgres schema name is 'public', we just init topic_name with the table_name. */
+    if (!matched || !strcmp(topic_name, "public")) {
+        strncpy(topic_name, table_name, TABLE_NAME_BUFFER_LENGTH);
+        topic_name[TABLE_NAME_BUFFER_LENGTH - 1] = '\0';
+    /* Otherwise we append to the topic_name previously initialized with the schema_name a "."
+     * separator followed by the table_name.                    */
+    } else {
+        strncat(topic_name, ".", TABLE_NAME_BUFFER_LENGTH - strlen(topic_name) - 1);
+        strncat(topic_name, table_name, TABLE_NAME_BUFFER_LENGTH - strlen(topic_name) - 1);
+    }
+
+    return strdup(topic_name);
+}
 
 static int handle_error(producer_context_t context, int err, const char *fmt, ...) {
     va_list args;
@@ -444,10 +485,13 @@ static int on_table_schema(void *_context, uint64_t wal_pos, Oid relid,
         const char *key_schema_json, size_t key_schema_len, avro_schema_t key_schema,
         const char *row_schema_json, size_t row_schema_len, avro_schema_t row_schema) {
     producer_context_t context = (producer_context_t) _context;
-    const char *topic_name = avro_schema_name(row_schema);
+
+    char *topic_name = topic_name_from_avro_schema(row_schema);
 
     table_metadata_t table = table_mapper_update(context->mapper, relid, topic_name,
             key_schema_json, key_schema_len, row_schema_json, row_schema_len);
+
+    free(topic_name);
 
     if (!table) {
         log_error("%s", context->mapper->error);
@@ -584,7 +628,7 @@ int send_kafka_msg(producer_context_t context, uint64_t wal_pos, Oid relid,
             return err;
         }
     }
-    
+
     if (key)
         free(key);
     return 0;
@@ -699,10 +743,10 @@ client_context_t init_client() {
     frame_reader->on_error        = on_client_error;
 
     client_context_t client = db_client_new();
-    client->app_name = APP_NAME;
+    client->app_name = strdup(APP_NAME);
     client->allow_unkeyed = false;
-    client->repl.slot_name = DEFAULT_REPLICATION_SLOT;
-    client->repl.output_plugin = OUTPUT_PLUGIN;
+    client->repl.slot_name = strdup(DEFAULT_REPLICATION_SLOT);
+    client->repl.output_plugin = strdup(OUTPUT_PLUGIN);
     client->repl.frame_reader = frame_reader;
     return client;
 }
@@ -823,10 +867,16 @@ int main(int argc, char **argv) {
 
     replication_stream_t stream = &context->client->repl;
 
-    if (!context->client->taking_snapshot) {
+    if (!context->client->slot_created) {
         log_info("Replication slot \"%s\" exists, streaming changes from %X/%X.",
                  stream->slot_name,
                  (uint32) (stream->start_lsn >> 32), (uint32) stream->start_lsn);
+    } else if (context->client->skip_snapshot) {
+        log_info("Created replication slot \"%s\", skipping snapshot and streaming changes from %X/%X.",
+                 stream->slot_name,
+                 (uint32) (stream->start_lsn >> 32), (uint32) stream->start_lsn);
+    } else {
+        assert(context->client->taking_snapshot);
     }
 
     while (context->client->status >= 0 && !received_shutdown_signal) {
