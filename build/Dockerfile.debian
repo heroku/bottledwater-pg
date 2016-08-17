@@ -13,13 +13,15 @@ RUN apt-get update && \
         postgresql-server-dev-all \
         git-buildpackage
 
+ARG DEBIAN_BRANCH
+
 RUN git config --global user.name Dockerfile.debian
 RUN git config --global user.email docker@example.com
 
 COPY . /tmp/bottledwater
 
 WORKDIR /usr/src
-RUN git clone --depth=50 --branch=debian file:///tmp/bottledwater bottledwater-pg
+RUN git clone --depth=50 --branch="$DEBIAN_BRANCH" file:///tmp/bottledwater bottledwater-pg
 
 WORKDIR /usr/src/bottledwater-pg
 RUN git checkout -qf $(git rev-parse HEAD)

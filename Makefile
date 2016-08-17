@@ -104,7 +104,7 @@ DOCKER_IMAGE = bwdeb
 PBUILDER_CACHE = /tmp/pbuilder-cache
 
 deb-docker:
-	docker build -t $(DOCKER_IMAGE) -f build/Dockerfile.debian .
+	docker build -t $(DOCKER_IMAGE) --build-arg DEBIAN_BRANCH=$(DEBIAN_BRANCH) -f build/Dockerfile.debian .
 
 deb-prepare-docker: deb-chroot-vars deb-docker
 	docker run --rm --privileged=true -e DIST=${DIST} -e ARCH=${ARCH} -v $(PBUILDER_CACHE):/var/cache/pbuilder $(DOCKER_IMAGE) make deb-prepare
