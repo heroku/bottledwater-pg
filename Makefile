@@ -98,7 +98,7 @@ deb-update: deb-chroot-vars
 
 deb-build: deb-chroot-vars
 	sed -i "s:trusty:${DIST}:g" debian/changelog
-	gbp buildpackage -us -uc --git-ignore-branch --git-upstream-tag=$(DEBIAN_UPSTREAM_TAG) --git-verbose --git-tag --git-ignore-new --git-pbuilder --git-arch=${ARCH} --git-dist=${DIST}
+	gbp buildpackage -us -uc --git-ignore-branch --git-upstream-tag=$(DEBIAN_UPSTREAM_TAG) --git-verbose --git-tag --git-ignore-new --git-pbuilder --git-pbuilder-options='--hookdir debian/pbuilder-hooks' --git-arch=${ARCH} --git-dist=${DIST}
 
 DOCKER_IMAGE = bwdeb
 PBUILDER_CACHE = /tmp/pbuilder-cache
