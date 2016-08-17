@@ -1,3 +1,50 @@
+bottledwater (0.1++avro-compatibility-0ubuntu1) trusty; urgency=medium
+
+  [ Sam Stokes ]
+  * message_spec is a better smoke test than smoke_spec
+
+  [ Matteo ]
+  * Updates to include a Postgres table's schema name in the target Kafka topic name
+
+  [ Sam Stokes ]
+  * Support before_service hooks during test cluster startup
+  * Add --skip-snapshot flag to skip the initial SELECT *...
+  * Quote booleans in docker-compose.yml to placate newer Docker Compose parser
+  * Make startup logging consistent
+
+  [ Matteo ]
+  * Functional tests updated to manage the check on Kafka topic name
+  * Functional tests updated to manage the check on Kafka topic name
+
+  [ Sam Stokes ]
+  * Avoid encoding dots in namespaces (#104)
+
+  [ Matteo ]
+  * Changed tabel mapper topic prefix delimiter from "-" to "."
+  * - Moved code updates for Kafka topic naming from table_mapper.c to bottledwater.c - Introduced logic to skip kafka schema prefix when it is equal to 'public' - Reverted changes to spec tests - Modified code update to get the Postgres schema name only stripping the prefix GENERATED_SCHEMA_NAMESPACE
+  * - Changes to:
+  * Fixed "return 1" in on_table_schema
+  * Updates to fix a memory leak in function "topic_name_from_avro_schema" and to add null terminator to topic_name in case of string truncation
+  * Fix in "topic_name_from_avro_schema" for buffer lenght check for strcat
+  * Updated "topic_name_from_avro_schema" to fix a potential UB
+
+  [ Sam Stokes ]
+  * Echo Docker version at start of build
+  * Remove mention of Zookeeper from Getting Started (it just works)
+  * Document all required environment variables
+  * Bind different Postgressen to different host ports to avoid clash
+  * Link to production readiness discussion in README
+  * Add tests for Postgres schemas and --topic-prefix
+  * Enable Valgrinding the BW daemon via env vars
+  * Run smoke tests under Valgrind and have CI require no leaks
+  * Fix some harmless leaks to establish a clean Valgrind baseline
+  * Document this a bit better
+  * Unbreak build if Avro is older than 1.8
+  * Update DEBIAN_BRANCH
+  * Set git-upstream to samstokes/avro-compatibility
+
+ -- Sam Stokes <me@samstokes.co.uk>  Wed, 17 Aug 2016 13:08:30 -0700
+
 bottledwater (0.1+master-3ubuntu5) trusty; urgency=medium
 
   * Configure git so tagging works
