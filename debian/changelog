@@ -1,3 +1,9 @@
+bottledwater (0.1+master-3ubuntu5) trusty; urgency=medium
+
+  * Configure git so tagging works
+
+ -- Sam Stokes <me@samstokes.co.uk>  Wed, 17 Aug 2016 13:02:09 -0700
+
 bottledwater (0.1+master-3ubuntu4) trusty; urgency=medium
 
   [ Dat Tran ]
