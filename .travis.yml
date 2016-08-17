@@ -14,6 +14,8 @@ cache:
     - /var/cache/pbuilder
 before_install:
   - sudo apt-get update -qq
+  - git config --global user.email travis.ci@example.com
+  - git config --global user.name 'Travis CI'
 install:
   - sudo apt-get install -qq --no-install-recommends build-essential cowbuilder debhelper fakeroot postgresql-server-dev-all git-buildpackage
   - make deb-prepare
