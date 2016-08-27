@@ -6,8 +6,8 @@ Build-Depends:
     debhelper (>= 9), pkg-config,
     postgresql-server-dev-all (>= 148~),
     libpq-dev, libsnappy-dev, libjansson-dev, liblzma-dev,
-    libcurl4-openssl-dev, libavro-c-dev, libavro-c1, libjansson4,
-    librdkafka-dev (>> 0.8.5), librdkafka1 (>> 0.8.5)
+    libcurl4-openssl-dev, libavro-c-dev (>> 1.7.9), libavro-c1 (>> 1.7.9), libjansson4,
+    librdkafka-dev (>> 0.9.0), librdkafka1 (>> 0.9.0)
 Standards-Version: 3.9.5
 Homepage: https://github.com/confluentinc/bottledwater-pg
 #Vcs-Git: git://anonscm.debian.org/collab-maint/bottledwater.git
@@ -17,7 +17,7 @@ Package: bottledwater
 Architecture: any
 Depends:
     ${shlibs:Depends}, ${misc:Depends},
-    libpq5, libsnappy1, libjansson4, curl, libavro-c1, librdkafka1 (>> 0.8.4)
+    libpq5, libsnappy1, libjansson4, curl, libavro-c1 (>> 1.7.9), librdkafka1 (>> 0.9.0)
 Description: Bottled Water, Change Data Capture from PostgreSQL to Kafka.
  Bottled Water uses PostgreSQL's logical replication feature to replicate
  databases in real-time into Apache's Kafka messaging-system.  This Change Data
@@ -32,7 +32,7 @@ Package: postgresql-PGVERSION-bottledwater
 Architecture: any
 Depends:
     ${shlibs:Depends}, ${misc:Depends},
-    libpq5, libsnappy1, libjansson4, curl, libavro-c1, librdkafka1 (>> 0.8.5),
+    libpq5, libsnappy1, libjansson4, curl, libavro-c1 (>> 1.7.9), librdkafka1 (>> 0.9.0),
     postgresql-PGVERSION
 Description: Bottled Water, Change Data Capture from PostgreSQL to Kafka.
  Bottled Water uses PostgreSQL's logical replication feature to replicate
