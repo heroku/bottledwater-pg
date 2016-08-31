@@ -6,7 +6,7 @@ env:
     - ARCH=amd64
     - secure: xJiQR8C4AqtuBn2XWaFM7NqoiZ1x8mzeTivg8GskC+Cow+20js21NnGdao2eddFdSd/VHKTani9NfbFgM2+Nrf3kegxhTTwV1GCAGQWZfPzs2YZ4DykOrJZL2ijFk+/YwV0k3vcSM03r88CmVhpOKJdO7OxESubIVijgURMRSNZqdcKj0IVGE1VmHjowEKveALLHHEWt3cUwNCb+g9MULU2D34GdeGnAfLkUevjK/sV6zER9Uig0rXf0Yhm2jn7kJFy0GXST/cqI9yHLB6AY1b2lpvWM+NRogP96fCRBNlmARPHuwHisQoyO963irXpVOuX13n49kViqD38XunN0+k3vkoJWAPKr/2LZX40l16bSIsh197dzerILfsZACAEsHB7yPo44HZjWKXFCMFi9wVP0Fu7tSB31CxkmDOl5KJ/AVh2G8F/GxYgmIHcLRZRTUmY2xTcniKjdaUBmA5wKX/UeOxkESEDS9ErvA5i3dEW35bO4bYnfCyR2KnPZophsey+jZcvAp274RoacMDG+VwQBo7uABYJcaIsnVd4DzW3CIvPA/Ue3gaiGnPmU4JoeUYIqtqg/XegkvhxkEK5c2NMxv3jsIaB/bhXo8/SiwNlab0HeWtraGZ5FflSzc5w9adhER9ENxpfRMVINDC2Zn+1ArKYGfqRk5856XSzo+5U=
   matrix:
-    - DIST=precise
+    #- DIST=precise # no longer works because of precise's outdated liblzma package
     - DIST=trusty
 cache:
   apt: true
@@ -22,9 +22,7 @@ install:
 script:
   - make deb-build
   - ls ..
-  # try installing the package we built on the build host.  N.B. that means
-  # installing the DIST=precise build on the (trusty) build host, so that might
-  # not work...!
+  # try installing the package we built on the build host.
   - 'for i in ./debian/pbuilder-hooks/*-apt.*.sh; do echo "+$i"; sudo $i; echo "-$i: $?"; done && sudo apt-get update'
   - sudo dpkg -i --force-depends ../bottledwater*.deb && sudo apt-get install -y --fix-broken
   - test -x /usr/bin/bottledwater && { bottledwater || true; } || { echo Package failed to install; false; }
