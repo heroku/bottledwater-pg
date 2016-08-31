@@ -1,3 +1,16 @@
+bottledwater (0.1++newer-packages-2ubuntu1) trusty; urgency=medium
+
+  * Update DEBIAN_BRANCH
+  * Ditch bottledwater PPA repo, it's out of date and broken
+  * Use Confluent Platform 3.0 APT repo for newer packages
+  * Confluent repo names Avro packages differently from stub's PPA
+  * Manual pkg-config dependency chasing for liblzma (required by libavro-c)
+  * Add hook to fabricate pkg-config for libsnappy in build chroot
+  * Pass pbuilder hooks to deb-build as well
+  * Put version constraints on libavro and librdkafka packages
+
+ -- Sam Stokes <me@samstokes.co.uk>  Tue, 30 Aug 2016 17:30:39 -0700
+
 bottledwater (0.1+master-4ubuntu1) trusty; urgency=medium
 
   * Note minimum required avro-c version
