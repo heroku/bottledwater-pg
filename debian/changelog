@@ -1,3 +1,9 @@
+bottledwater (0.1++newer-packages-2ubuntu2) trusty; urgency=medium
+
+  * Disable precise build as it's broken now
+
+ -- Sam Stokes <me@samstokes.co.uk>  Tue, 30 Aug 2016 17:38:58 -0700
+
 bottledwater (0.1++newer-packages-2ubuntu1) trusty; urgency=medium
 
   * Update DEBIAN_BRANCH
