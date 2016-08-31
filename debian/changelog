@@ -1,3 +1,18 @@
+bottledwater (0.1+master-4ubuntu1) trusty; urgency=medium
+
+  * Note minimum required avro-c version
+  * Fix harmless but confusing thinko
+  * Prototype error_policy option in output plugin
+  * Tests for large values
+  * Pass client error_policy down to output plugin
+  * Pass client error_policy to snapshot too
+  * Exclude our own domain type from tests
+  * Clean up error handling
+  * Quote output plugin param name for consistency
+  * Set git-upstream to confluent/master
+
+ -- Sam Stokes <me@samstokes.co.uk>  Tue, 30 Aug 2016 17:12:55 -0700
+
 bottledwater (0.1+master-3ubuntu7) trusty; urgency=medium
 
   [ Sam Stokes ]
